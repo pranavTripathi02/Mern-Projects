@@ -1,21 +1,31 @@
-// import logo from './logo.svg';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Home, Register, Login, Songs, ProtectedRoute, Users } from './pages';
+import {
+  Home,
+  Register,
+  Login,
+  Songs,
+  ProtectedRoute,
+  AllUsers,
+  MyAccount,
+  AddSong,
+  DeleteSong,
+  Artists,
+} from './pages';
 import './App.css';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import { useGlobalContext } from './context';
 
 function App() {
-  // const { isLoading } = useGlobalContext();
-  // if (isLoading) {
-  //   return (
-  //     <section className='page page-center'>
-  //       <div className='loading'></div>
-  //     </section>
-  //   );
-  // }
+  const { isLoading } = useGlobalContext();
+  if (isLoading) {
+    return (
+      <section className='page page-center'>
+        <div className='loading'></div>
+      </section>
+    );
+  }
   return (
     <>
       <aside>
@@ -23,12 +33,13 @@ function App() {
       </aside>
       {/* <main className='justify-content-center col-md-9 ml-sm-auto col-lg-10 pt-3 px-4'> */}
       <div className='container-fluid'>
-        <main className='col-md-9 ms-sm-auto col-lg-10 px-md-4'>
+        <main className='col-md-8 mx-auto col-lg-8 px-md-4 my-5 py-5'>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
-            <Route path='/dashboard/songs' element={<Songs />} />
+          </Routes>
+          <Routes>
             <Route
               path='/dashboard'
               element={
@@ -38,10 +49,50 @@ function App() {
               }
             />
             <Route
-              path='/users'
+              path='/users/me'
               element={
                 <ProtectedRoute>
-                  <Users />
+                  <MyAccount />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/users/all'
+              element={
+                <ProtectedRoute>
+                  <AllUsers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/dashboard/songs'
+              element={
+                <ProtectedRoute>
+                  <Songs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/dashboard/songs/artists'
+              element={
+                <ProtectedRoute>
+                  <Artists />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/dashboard/songs/addsong'
+              element={
+                <ProtectedRoute>
+                  <AddSong />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/dashboard/songs/deletesong'
+              element={
+                <ProtectedRoute>
+                  <DeleteSong />
                 </ProtectedRoute>
               }
             />

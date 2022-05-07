@@ -10,7 +10,7 @@ const {
   authoriseRoles,
 } = require('../middleware/Authorization');
 
-router.route('/').get(authoriseUser, authoriseRoles('admin'), getAllUsers);
+router.route('/all').get(authoriseUser, authoriseRoles('admin'), getAllUsers);
 router
   .route('/me')
   .get(authoriseUser, getCurrentUser)

@@ -3,6 +3,7 @@ import FormRow from '../components/FormRow';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { useGlobalContext } from '../context';
+import useLocalState from '../utils/localState';
 
 export default function Login() {
   const { user, saveUser, navigate } = useGlobalContext();
@@ -11,26 +12,43 @@ export default function Login() {
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
+  const { alert, setLoading, loading, showAlert, hideAlert } = useLocalState();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    hideAlert();
+    setLoading(true);
     const { email, password } = values;
     const user = { email, password };
     try {
       const { data } = await axios.post('/api/v1/auth/login', user);
       // setLoading(false);
       setValues({ email: '', password: '' });
+      showAlert({
+        text: 'Welcome ${data.user.name}. Redirecting to dashboard...',
+        type: 'success',
+      });
+      setLoading(false);
       saveUser(data.user);
-      navigate('/dashboard');
+      // navigate('/dashboard');
     } catch (err) {
-      console.log(err);
+      console.log('err is: ', err);
+      showAlert({ text: err.response.data.message });
+      setLoading(false);
     }
   };
+  console.log('alert: ', alert);
   return (
     <>
+      {alert.show && (
+        <div className={`alert alert-${alert.type}`}>{alert.text}</div>
+      )}
       {user && <Navigate to='/dashboard' />}
       <div className='container-sm shadow my-5 border rounded p-5'>
         <h3 className='text-center'>Login</h3>
-        <form className='form form-floating' onSubmit={handleSubmit}>
+        <form
+          className={loading ? 'form form-loading' : 'form'}
+          onSubmit={handleSubmit}
+        >
           <div className='mb-3'>
             <FormRow
               name='email'
@@ -49,7 +67,7 @@ export default function Login() {
           </div>
           <div className='text-center justify-contents-center'>
             <button className='btn btn-lg btn-success' type='submit'>
-              Submit
+              {loading ? 'Loading...' : 'Login'}
             </button>
             <div className='p-3 text-decoration-none d-inline'>
               Not a member yet?

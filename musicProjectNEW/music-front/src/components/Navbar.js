@@ -1,6 +1,7 @@
 import React from 'react';
-import logo from '../logo.svg';
 // import styled from 'styled-components';
+import logo from '../logo.png';
+import sangeet from '../sangeet.png';
 import { useGlobalContext } from '../context';
 import { Link } from 'react-router-dom';
 
@@ -8,13 +9,13 @@ export default function Navbar() {
   const { user, logoutUser } = useGlobalContext();
   return (
     <>
-      <header className='navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow text-decoration-none'>
+      <header className='navbar navbar-dark sticky-top bg-dark p-0 shadow text-decoration-none'>
         <Link to='/' className='navbar-brand'>
           <img
-            className='logo'
-            src={logo}
+            className='logo ms-3'
+            src={sangeet}
             alt='logo'
-            style={{ height: '50px', width: '50px' }}
+            style={{ height: '50px', width: '130px' }}
           />
         </Link>
         {user && (
@@ -31,19 +32,46 @@ export default function Navbar() {
       </header>
       {user && (
         <div className='row'>
-          <nav className='col-md-2 d-none d-md-block bg-dark sidebar'>
+          <nav className='col-md-2 col-lg-2 d-none d-md-block bg-dark sidebar'>
             <div className='sidebar-sticky'>
               <ul className='nav flex-column'>
                 <li className='nav-item'>
-                  <Link to='/songs' className='nav-link'>
+                  <Link to='/dashboard/songs' className='nav-link'>
                     <span>Songs</span>
                   </Link>
                 </li>
                 <li className='nav-item'>
-                  <Link to='/users' className='nav-link'>
-                    <span>Users</span>
+                  <Link to='/dashboard/songs/artists' className='nav-link'>
+                    <span>Artists</span>
                   </Link>
                 </li>
+                <li className='nav-item'>
+                  <Link to='/users/me' className='nav-link'>
+                    <span>My account</span>
+                  </Link>
+                </li>
+                {user.role === 'admin' && (
+                  <>
+                    <li className='nav-item'>
+                      <Link to='/users/all' className='nav-link'>
+                        <span className='text-danger'>All Users</span>
+                      </Link>
+                    </li>
+                    <li className='nav-item'>
+                      <Link to='/dashboard/songs/addsong/' className='nav-link'>
+                        <span className='text-danger'>Add Song</span>
+                      </Link>
+                    </li>
+                    <li className='nav-item'>
+                      <Link
+                        to='/dashboard/songs/deletesong/'
+                        className='nav-link'
+                      >
+                        <span className='text-danger'>Delete Song</span>
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </nav>

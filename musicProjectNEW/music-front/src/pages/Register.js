@@ -2,29 +2,51 @@ import React, { useState } from 'react';
 import FormRow from '../components/FormRow';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useLocalState from '../utils/localState';
 
 export default function Register() {
   const navigate = useNavigate();
   const [values, setValues] = useState({ name: '', email: '', password: '' });
+
+  const {
+    alert,
+    showAlert,
+    loading,
+    setLoading,
+    hideAlert,
+    setSuccess,
+    success,
+  } = useLocalState();
+
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
     // console.log(values);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    hideAlert();
+    setLoading(true);
     const { name, email, password } = values;
     const user = { name, email, password };
     // console.log('from env', process.env.REACT_APP_REGISTER);
     try {
       const { data } = await axios.post('/api/v1/auth/register', user);
-      console.log(data);
+      setValues({ name: '', email: '', password: '' });
+      setSuccess(true);
+      showAlert({ text: data.msg, type: 'success' });
       navigate('/');
     } catch (err) {
-      console.log(err);
+      const { message } = err.response.data;
+      showAlert({ text: message || 'there was an error' });
     }
+    setLoading(false);
   };
   return (
     <>
+      {alert.show && (
+        <div className={`alert alert-${alert.type}`}>{alert.text}</div>
+      )}
       <div className='container-sm shadow my-5 border rounded p-5'>
         <h3 className='text-center'>Register</h3>
         <form className='form' onSubmit={handleSubmit}>

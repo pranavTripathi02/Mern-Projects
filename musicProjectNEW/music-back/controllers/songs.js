@@ -1,10 +1,11 @@
 const { StatusCodes } = require('http-status-codes');
-const { NotFoundError } = require('../error');
+const { NotFoundError, BadRequestError } = require('../error');
 const Song = require('../models/Song');
 
 const addSong = async (req, res) => {
   // req.body.createdBy = req.user.userID;
   const song = await Song.create(req.body);
+  console.log('song:', song);
   res.status(StatusCodes.CREATED).json(song);
 };
 const getAllSongs = async (req, res) => {
@@ -16,6 +17,19 @@ const getAllSongs = async (req, res) => {
   const songs = await Song.find(queryObj);
   if (!songs) {
     throw NotFoundError('No songs in DB');
+  }
+  res.status(StatusCodes.OK).json({ songs });
+};
+const getArtists = async (req, res) => {
+  console.log('getartists');
+  const { artist } = req.query;
+  const queryObj = {};
+  console.log(artist);
+  if (artist) queryObj.artist = artist;
+  console.log(queryObj);
+  const songs = await Song.find(queryObj);
+  if (!songs) {
+    throw NotFoundError('No artists in DB');
   }
   res.status(StatusCodes.OK).json({ songs });
 };
@@ -44,10 +58,26 @@ const updateSong = async (req, res) => {
   res.status(StatusCodes.OK).json(song);
 };
 const deleteSong = async (req, res) => {
-  const { id: songID } = req.params;
-  const song = await Song.findByIdAndDelete({ _id: songID });
+  // const { id: songID } = req.params;
+  // console.log(req);
+  const { title, artist } = req.body.song;
+  console.log(req.song);
+  console.log(title, artist);
+  const queryObj = { title, artist };
+  console.log(queryObj);
+  if (!artist || !title)
+    throw new BadRequestError(`Please provide complete information`);
+  // if (!title) queryObj.title = title;
+  // console.log(queryObj);
+  // const songs = await Song.find(queryObj);
+  // if (!songs) {
+  //   throw NotFoundError('No songs in DB');
+  // }
+  const song = await Song.findOneAndDelete(queryObj);
   if (!song) {
-    throw new NotFoundError(`No songs found with id ${songID}`);
+    throw new NotFoundError(
+      `No songs found with title ${queryObj.title} by artist ${queryObj.artist}`
+    );
   }
   res.status(StatusCodes.OK).json(song);
 };
@@ -58,4 +88,5 @@ module.exports = {
   getSong,
   updateSong,
   deleteSong,
+  getArtists,
 };
